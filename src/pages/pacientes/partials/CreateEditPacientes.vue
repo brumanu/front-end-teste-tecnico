@@ -124,6 +124,12 @@ const handleSubmit = () => {
       pacientesStore.updatePaciente({
         paciente_id: pacientesStore.selectedPaciente.paciente_id,
         nome: payload.value.nome,
+        cpf: payload.value.cpf,
+        data_cadatro: payload.value.data_cadatro,
+        data_nasc: payload.value.data_nasc,
+        cep: payload.value.cep,
+        endereco: payload.value.endereco,
+        endereco_numero: payload.value.endereco_numero,
       });
     } else {
       pacientesStore.addPaciente({
