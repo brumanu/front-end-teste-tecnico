@@ -24,7 +24,6 @@
             placeholder="CPF"
             v-mask="'###.###.###-##'"
           />
-          {{ errors }}
           <span v-if="errors.cpf" class="error">{{ errors.cpf }}</span>
         </div>
         <div class="flex flex-column">
@@ -37,7 +36,6 @@
             placeholder="Selecione uma data"
             format="DD/MM/YYYY"
             value-format="DD/MM/YYYY"
-            @change="o()"
           />
           <span v-if="errors.data_nasc" class="error">{{ errors.data_nasc }}</span>
         </div>
@@ -99,15 +97,7 @@ const props = defineProps({
 
 const title = ref("");
 const errors = ref({});
-const payload = ref({
-  nome: "",
-  cpf: "",
-  data_cadatro: "",
-  data_nasc: "",
-  cep: "",
-  endereco: "",
-  endereco_numero: "",
-});
+const payload = ref({});
 
 const emit = defineEmits(["close"]);
 
@@ -115,13 +105,16 @@ onUpdated(() => {
   if (props.open == true) {
     title.value = props.isUpdate ? "Editar" : "Criar";
     payload.value.nome = pacientesStore.selectedPaciente?.nome || "";
+    payload.value.cpf = pacientesStore.selectedPaciente?.cpf || "";
+    payload.value.data_cadatro = pacientesStore.selectedPaciente?.data_cadatro || "";
+    payload.value.data_nasc = pacientesStore.selectedPaciente?.data_nasc || "";
+    payload.value.cep = pacientesStore.selectedPaciente?.cep || "";
+    payload.value.endereco = pacientesStore.selectedPaciente?.endereco || "";
+    payload.value.endereco_numero = pacientesStore.selectedPaciente?.endereco_numero || "";
     errors.value = {};
   }
 });
 
-const o = () => {
-  console.log(payload.value.data_nasc);
-};
 
 const handleSubmit = () => {
   errors.value = validateFields(payload.value);

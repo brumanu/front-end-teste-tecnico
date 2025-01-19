@@ -32,12 +32,13 @@
               :value="item.especialidade_id"
             />
           </el-select>
+          <span v-if="errors.especialidade" class="error">{{ errors.especialidade }}</span>
         </div>
         <div>
           <label for="nome">CRM</label>
 
           <el-input v-model="payload.crm" placeholder="CRM" />
-          <span v-if="errors.nome" class="error">{{ errors.nome }}</span>
+          <span v-if="errors.crm" class="error">{{ errors.crm }}</span>
         </div>
       </div>
     </template>
