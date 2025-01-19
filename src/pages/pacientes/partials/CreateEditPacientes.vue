@@ -1,0 +1,188 @@
+<template>
+  <BaseModal
+    :open="props.open"
+    @close="$emit('close')"
+    :width="500"
+    :height="500"
+  >
+    <template v-slot:header>
+      <h3>{{ title }} Paciente</h3>
+    </template>
+    <template v-slot:body>
+      <div class="flex flex-column w-100 mb-2">
+        <div>
+          <label for="nome">Nome do Paciente</label>
+
+          <el-input v-model="payload.nome" placeholder="Nome do Paciente" />
+          <span v-if="errors.nome" class="error">{{ errors.nome }}</span>
+        </div>
+        <div>
+          <label for="cpf">CPF</label>
+
+          <el-input
+            v-model="payload.cpf"
+            placeholder="CPF"
+            v-mask="'###.###.###-##'"
+          />
+          {{ errors }}
+          <span v-if="errors.cpf" class="error">{{ errors.cpf }}</span>
+        </div>
+        <div class="flex flex-column">
+          <label for="nome">Data de Nascimento</label>
+
+          <el-date-picker
+            style="width: 100%"
+            v-model="payload.data_nasc"
+            type="date"
+            placeholder="Selecione uma data"
+            format="DD/MM/YYYY"
+            value-format="DD/MM/YYYY"
+            @change="o()"
+          />
+          <span v-if="errors.data_nasc" class="error">{{ errors.data_nasc }}</span>
+        </div>
+        <div>
+          <label for="nome">CEP</label>
+
+          <el-input
+            v-model="payload.cep"
+            placeholder="CEP"
+            v-mask="'#####-###'"
+            @change="buscarEndereco()"
+          />
+          <span v-if="errors.cep" class="error">{{ errors.cep }}</span>
+        </div>
+        <div>
+          <label for="nome">Endereço</label>
+
+          <el-input v-model="payload.endereco" placeholder="Endereço" />
+          <span v-if="errors.endereco" class="error">{{ errors.endereco }}</span>
+        </div>
+        <div>
+          <label for="nome">Número</label>
+
+          <el-input v-model="payload.endereco_numero" placeholder="Número" />
+          <span v-if="errors.endereco_numero" class="error">{{ errors.endereco_numero }}</span>
+        </div>
+      </div>
+    </template>
+    <template v-slot:footer>
+      <el-button type="primary" round @click="handleSubmit()">Salvar</el-button>
+      <el-button type="danger" round @click="handleClose()">Cancelar</el-button>
+    </template>
+  </BaseModal>
+</template>
+
+  <script setup>
+import { onUpdated, ref } from "vue";
+import { usePacientesStore } from "@/stores/pacientes.js";
+import { useFormValidator } from "@/composables/useFormValidator";
+import { formatDate } from "@/utils/date";
+
+const { validateFields, isValid } = useFormValidator();
+const pacientesStore = usePacientesStore();
+
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false,
+  },
+  isUpdate: {
+    type: Boolean,
+    default: false,
+  },
+  paciente: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+
+const title = ref("");
+const errors = ref({});
+const payload = ref({
+  nome: "",
+  cpf: "",
+  data_cadatro: "",
+  data_nasc: "",
+  cep: "",
+  endereco: "",
+  endereco_numero: "",
+});
+
+const emit = defineEmits(["close"]);
+
+onUpdated(() => {
+  if (props.open == true) {
+    title.value = props.isUpdate ? "Editar" : "Criar";
+    payload.value.nome = pacientesStore.selectedPaciente?.nome || "";
+    errors.value = {};
+  }
+});
+
+const o = () => {
+  console.log(payload.value.data_nasc);
+};
+
+const handleSubmit = () => {
+  errors.value = validateFields(payload.value);
+
+  if (isValid(errors.value)) {
+    if (props.isUpdate) {
+      pacientesStore.updatePaciente({
+        paciente_id: pacientesStore.selectedPaciente.paciente_id,
+        nome: payload.value.nome,
+      });
+    } else {
+      pacientesStore.addPaciente({
+        nome: payload.value.nome,
+        cpf: payload.value.cpf,
+        data_cadatro: formatDate(Date.now()),
+        data_nasc: payload.value.data_nasc,
+        cep: payload.value.cep,
+        endereco: payload.value.endereco,
+        endereco_numero: payload.value.endereco_numero,
+      });
+    }
+    pacientesStore.clearSelectedPaciente();
+    payload.value = {};
+    emit("close");
+  }
+};
+
+const buscarEndereco = async () => {
+  if (!payload.value.cep || payload.value.cep.length < 8) {
+    errors.value.cep = "CEP inválido. Verifique e tente novamente.";
+    payload.value.endereco = "";
+    return;
+  }
+
+  try {
+    // Chama o método do store para buscar o endereço
+    const endereco = await pacientesStore.fetchEnderecoPorCep(
+      payload.value.cep
+    );
+
+    payload.value.endereco = endereco.logradouro;
+
+    // Limpa qualquer erro anterior
+    errors.value.cep = null;
+  } catch (error) {
+    console.error("Erro ao buscar endereço:", error);
+    errors.value.cep = "Não foi possível buscar o endereço. Verifique o CEP.";
+    payload.value.endereco = "";
+  }
+};
+
+const handleClose = () => {
+  pacientesStore.clearSelectedPaciente();
+  payload.value = {};
+  errors.value = {};
+  emit("close");
+};
+</script>
+<style scoped>
+.error {
+  color: red;
+  font-size: 0.7rem;
+}
+</style>

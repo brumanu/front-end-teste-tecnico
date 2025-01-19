@@ -6,7 +6,7 @@ const routes = [
 
     { path: "/especialidades", name: "Especialidades", component: () => import("../pages/especialidades/EspecialidadesView.vue") },
     { path: "/medicos", name: "Medicos", component: () => import("../pages/medicos/MedicosView.vue") },
-    // { path: "/pacientes", name: "Pacientes", component: () => import("PacientesView") },
+    { path: "/pacientes", name: "Pacientes", component: () => import("../pages/pacientes/PacientesView.vue") },
     // { path: "/consultas", name: "Consultas", component: () => import("ConsultasView") }
 ];
 
