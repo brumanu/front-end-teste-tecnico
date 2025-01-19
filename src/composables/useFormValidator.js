@@ -30,19 +30,14 @@ export function useFormValidator() {
 
   // Valida os campos recebidos
   const validateFields = (fields) => {
-    console.log(fields, 'campos');
-    
     const errors = {};
     for (const [key, value] of Object.entries(fields)) {
-      console.log(key, value);
-      
       if (!value || value.toString().trim() === "") {
         errors[key] = "Este campo é obrigatório.";
       } else if (key === "cpf" && !validateCPF(value)) {
         errors[key] = "CPF inválido.";
       }
     }
-    console.log(errors, 'js');
     
     return errors;
   };

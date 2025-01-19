@@ -38,7 +38,7 @@
             type="warning"
             :icon="Cellphone"
             circle
-            @click="handlePhone(row.paciente_id)"
+            @click="handlePhone(row)"
           />
         </template>
       </el-table-column>
@@ -50,17 +50,26 @@
       :paciente="pacienteAtual"
       :isUpdate="isUpdate"
     />
+
+    <CreateEditPhone
+      :open="formPhoneModal"
+      @close="closeModal"
+      :paciente="pacienteAtual"
+    />
+
   </PageWrapper>
 </template>
   <script setup>
 import { ref } from "vue";
 import { usePacientesStore } from "@/stores/pacientes.js";
 import CreateEditPacientes from "./partials/CreateEditPacientes.vue";
+import CreateEditPhone from "./partials/CreateEditPhone.vue";
 
 import { Delete, Edit, Cellphone } from "@element-plus/icons-vue";
 
 const pacientesStore = usePacientesStore();
 const formModal = ref(false);
+const formPhoneModal = ref(false);
 const isUpdate = ref(false);
 
 const pacienteAtual = ref(null);
@@ -73,8 +82,15 @@ const openModal = (paciente) => {
   }
 };
 
+const handlePhone = (paciente) => {
+    pacientesStore.setSelectedPaciente(paciente);
+    
+  formPhoneModal.value = true;
+};
+
 const closeModal = () => {
   formModal.value = false;
+  formPhoneModal.value = false;
   pacienteAtual.value = null;
   isUpdate.value = false;
 };

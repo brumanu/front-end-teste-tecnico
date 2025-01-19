@@ -14,7 +14,8 @@ export const usePacientesStore = defineStore("pacientes", {
                 data_nasc: "11/06/1966",
                 cep: "81870218",
                 endereco: "Rua Lídia Carvalho Marques",
-                endereco_numero: "11"
+                endereco_numero: "11",
+                telefone: []
             },
             {
                 paciente_id: 2,
@@ -24,7 +25,8 @@ export const usePacientesStore = defineStore("pacientes", {
                 data_nasc: "15/07/1963",
                 cep: "81925-576",
                 endereco: "Rua Tala Raul Miguel Elias",
-                endereco_numero: "132"
+                endereco_numero: "132",
+                telefone: []
             },
             {
                 paciente_id: 3,
@@ -34,7 +36,8 @@ export const usePacientesStore = defineStore("pacientes", {
                 data_nasc: "04/12/2001",
                 cep: "81270-530",
                 endereco: "Rua Osvaldo Tosato",
-                endereco_numero: "54"
+                endereco_numero: "54",
+                telefone: []
             },
             {
                 paciente_id: 4,
@@ -44,7 +47,8 @@ export const usePacientesStore = defineStore("pacientes", {
                 data_nasc: "14/09/1971",
                 cep: "80740-520",
                 endereco: "Rua Gabriel Nunes Pires",
-                endereco_numero: "566"
+                endereco_numero: "566",
+                telefone: []
             },
             {
                 paciente_id: 5,
@@ -54,7 +58,8 @@ export const usePacientesStore = defineStore("pacientes", {
                 data_nasc: "20/12/1977",
                 cep: "82010-630",
                 endereco: "Rua Apolônia Kozak",
-                endereco_numero: "1444"
+                endereco_numero: "1444",
+                telefone: []
             }
         ],
         selectedPaciente: null,
@@ -89,9 +94,8 @@ export const usePacientesStore = defineStore("pacientes", {
             this.selectedPaciente = null;
         },
         addPaciente(novoPaciente) {
-            console.log(novoPaciente)
             const novoId = String(this.pacientes.length + 1);
-            this.pacientes.push({ paciente_id: novoId, ...novoPaciente });
+            this.pacientes.push({ paciente_id: novoId, ...novoPaciente, telefone: [] });
             toast.success('Paciente cadastrado com sucesso');
         },
         updatePaciente(pacienteAtualizado) {

@@ -22,7 +22,6 @@ export const useMedicosStore = defineStore("medicos", {
             this.selectedMedico = null;
         },
         addMedico(novoMedico) {
-            console.log(novoMedico)
             const novoId = String(this.medicos.length + 1);
             this.medicos.push({ medico_id: novoId, ...novoMedico });
             toast.success('Medico cadastrado com sucesso');

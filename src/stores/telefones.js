@@ -4,7 +4,6 @@ const toast = useToast();
 
 export const useTelefonesStore = defineStore("telefones", {
   state: () => ({
-    telefones: [], // Lista de telefones
     selectedTelefone: null, // Telefone selecionada
   }),
   actions: {
@@ -17,23 +16,27 @@ export const useTelefonesStore = defineStore("telefones", {
     clearSelectedTelefone() {
       this.selectedTelefone = null;
     },
-    addTelefone(novaTelefone) {
-      const novoId = String(this.telefones.length + 1);
-        this.telefones.push({ telefone_id: novoId, ...novaTelefone });
-        toast.success('Telefone cadastrada com sucesso');
+    addTelefone(novoTelefone, paciente) {
+
+      const novoId = String(paciente.telefone.length + 1);
+
+      let novoTelefonePayload = { telefone_id: novoId, telefone: novoTelefone.telefone}
+
+      paciente.telefone.push(novoTelefonePayload);
+        toast.success('Telefone cadastrado com sucesso');
     },
-    updateTelefone(telefoneAtualizada) {
-      const index = this.telefones.findIndex(
+    updateTelefone(telefoneAtualizada, paciente) {
+      const index = paciente.telefone.findIndex(
         (obj) => obj.telefone_id === telefoneAtualizada.telefone_id
       );
       if (index !== -1) {
-          this.telefones[index] = { ...telefoneAtualizada };
-          toast.success('Telefone atualizada com sucesso');
+        paciente.telefone[index] = { ...telefoneAtualizada };
+          toast.success('Telefone atualizado com sucesso');
       }
     },
-    deleteTelefone(telefone_id) {
-        this.telefones = this.telefones.filter((esp) => esp.telefone_id !== telefone_id);
-        toast.success('Telefone deletada com sucesso');
+    deleteTelefone(telefone_id, paciente) {
+      paciente.telefone = paciente.telefone.filter((obj) => obj.telefone_id !== telefone_id);
+        toast.success('Telefone deletado com sucesso');
     },
   },
   getters: {
