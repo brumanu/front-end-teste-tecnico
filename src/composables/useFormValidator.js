@@ -2,6 +2,7 @@
 export function useFormValidator() {
   // Valida se um CPF é válido
   const validateCPF = (cpf) => {
+    
     if (!cpf) return false;
     cpf = cpf.replace(/[^\d]+/g, "");
 
@@ -30,12 +31,19 @@ export function useFormValidator() {
 
   // Valida os campos recebidos
   const validateFields = (fields) => {
+    
     const errors = {};
     for (const [key, value] of Object.entries(fields)) {
       if (!value || value.toString().trim() === "") {
         errors[key] = "Este campo é obrigatório.";
-      } else if (key === "cpf" && !validateCPF(value)) {
+      } else if ((key === "cpf") && !validateCPF(value)) {
         errors[key] = "CPF inválido.";
+      } else if (key === "cpf_responsavel") {
+        if (value !== "null" && !validateCPF(value)) {
+          errors[key] = "CPF inválido.";
+          // if (!validateCPF(value)) {
+          // }
+        }
       }
     }
     

@@ -36,8 +36,21 @@
             placeholder="Selecione uma data"
             format="DD/MM/YYYY"
             value-format="DD/MM/YYYY"
+            @change="validateAge(payload.data_nasc)"
           />
-          <span v-if="errors.data_nasc" class="error">{{ errors.data_nasc }}</span>
+          <span v-if="errors.data_nasc" class="error">{{
+            errors.data_nasc
+          }}</span>
+        </div>
+        <div v-if="isAdult == false">
+          <label for="cpf">CPF do Responsável</label>
+
+          <el-input
+            v-model="payload.cpf_responsavel"
+            placeholder="CPF"
+            v-mask="'###.###.###-##'"
+          />
+          <span v-if="errors.cpf_responsavel" class="error">{{ errors.cpf_responsavel }}</span>
         </div>
         <div>
           <label for="nome">CEP</label>
@@ -54,13 +67,17 @@
           <label for="nome">Endereço</label>
 
           <el-input v-model="payload.endereco" placeholder="Endereço" />
-          <span v-if="errors.endereco" class="error">{{ errors.endereco }}</span>
+          <span v-if="errors.endereco" class="error">{{
+            errors.endereco
+          }}</span>
         </div>
         <div>
           <label for="nome">Número</label>
 
           <el-input v-model="payload.endereco_numero" placeholder="Número" />
-          <span v-if="errors.endereco_numero" class="error">{{ errors.endereco_numero }}</span>
+          <span v-if="errors.endereco_numero" class="error">{{
+            errors.endereco_numero
+          }}</span>
         </div>
       </div>
     </template>
@@ -76,6 +93,7 @@ import { onUpdated, ref } from "vue";
 import { usePacientesStore } from "@/stores/pacientes.js";
 import { useFormValidator } from "@/composables/useFormValidator";
 import { formatDate } from "@/utils/date";
+import dayjs from "dayjs";
 
 const { validateFields, isValid } = useFormValidator();
 const pacientesStore = usePacientesStore();
@@ -98,45 +116,68 @@ const props = defineProps({
 const title = ref("");
 const errors = ref({});
 const payload = ref({});
+const isAdult = ref(true);
 
 const emit = defineEmits(["close"]);
 
 onUpdated(() => {
   if (props.open == true) {
+
     title.value = props.isUpdate ? "Editar" : "Criar";
     payload.value.nome = pacientesStore.selectedPaciente?.nome || "";
     payload.value.cpf = pacientesStore.selectedPaciente?.cpf || "";
-    payload.value.data_cadatro = pacientesStore.selectedPaciente?.data_cadatro || formatDate(Date.now());
+    payload.value.data_cadatro =
+    pacientesStore.selectedPaciente?.data_cadatro || formatDate(Date.now());
     payload.value.data_nasc = pacientesStore.selectedPaciente?.data_nasc || "";
+    payload.value.cpf_responsavel = pacientesStore.selectedPaciente?.cpf_responsavel || null;
     payload.value.cep = pacientesStore.selectedPaciente?.cep || "";
     payload.value.endereco = pacientesStore.selectedPaciente?.endereco || "";
-    payload.value.endereco_numero = pacientesStore.selectedPaciente?.endereco_numero || "";
+    payload.value.endereco_numero =
+    pacientesStore.selectedPaciente?.endereco_numero || "";
     errors.value = {};
+    if (props.isUpdate) {
+      validateAge(pacientesStore.selectedPaciente?.data_nasc)
+    } 
   }
 });
 
+  const handleSubmit = () => {
+    
+    if (isAdult.value == true) {
+      payload.value.cpf_responsavel = "null";
+    }
+    
+    errors.value = validateFields(payload.value);
+    if (payload.value.cpf_responsavel === payload.value.cpf) {
+      errors.value.cpf_responsavel = "Cpf do paciente não pode ser igual ao Cpf do responsável"
+    }
 
-const handleSubmit = () => {
-  errors.value = validateFields(payload.value);
-
-  if (isValid(errors.value)) {
+    console.log( errors.value);
+    console.log(3);
+    
+    if (isValid(errors.value)) {
+    console.log(4);
     if (props.isUpdate) {
+      console.log(5);
       pacientesStore.updatePaciente({
         paciente_id: pacientesStore.selectedPaciente.paciente_id,
         nome: payload.value.nome,
         cpf: payload.value.cpf,
         data_cadatro: payload.value.data_cadatro,
+        cpf_responsavel: payload.value.cpf_responsavel,
         data_nasc: payload.value.data_nasc,
         cep: payload.value.cep,
         endereco: payload.value.endereco,
         endereco_numero: payload.value.endereco_numero,
       });
     } else {
+      console.log(6 );
       pacientesStore.addPaciente({
         nome: payload.value.nome,
         cpf: payload.value.cpf,
         data_cadatro: formatDate(Date.now()),
         data_nasc: payload.value.data_nasc,
+        cpf_responsavel: payload.value.cpf_responsavel,
         cep: payload.value.cep,
         endereco: payload.value.endereco,
         endereco_numero: payload.value.endereco_numero,
@@ -172,10 +213,18 @@ const buscarEndereco = async () => {
   }
 };
 
+const validateAge = (date) => {
+  const today = dayjs();
+  const convertedData = dayjs(date, "DD/MM/YYYY");
+  isAdult.value = today.diff(convertedData, "year") >= 18 ? true : false;
+};
+
+
 const handleClose = () => {
   pacientesStore.clearSelectedPaciente();
   payload.value = {};
   errors.value = {};
+  isAdult.value = true;
   emit("close");
 };
 </script>
