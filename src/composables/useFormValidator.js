@@ -41,8 +41,6 @@ export function useFormValidator() {
       } else if (key === "cpf_responsavel") {
         if (value !== "null" && !validateCPF(value)) {
           errors[key] = "CPF inválido.";
-          // if (!validateCPF(value)) {
-          // }
         }
       }
     }

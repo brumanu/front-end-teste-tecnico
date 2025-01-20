@@ -10,6 +10,7 @@ export const useMedicosStore = defineStore("medicos", {
             { medico_id: 3, nome: "Maria Paz", especialidade: { especialidade_id: 4, nome: "Pediatria" }, crm: "54321-PR" },
         ],
         selectedMedico: null,
+        searchQuery: "",
     }),
     actions: {
         setMedicos(data) {
@@ -20,6 +21,9 @@ export const useMedicosStore = defineStore("medicos", {
         },
         clearSelectedMedico() {
             this.selectedMedico = null;
+        },
+        setSearchQuery(query) {
+            this.searchQuery = query;
         },
         addMedico(novoMedico) {
             const novoId = String(this.medicos.length + 1);
@@ -43,6 +47,14 @@ export const useMedicosStore = defineStore("medicos", {
     getters: {
         totalMedicos(state) {
             return state.medicos.length;
+        },
+        filteredMedicos(state) {
+            const query = state.searchQuery.toLowerCase();
+            return state.medicos.filter((medico) => 
+                medico.nome.toLowerCase().includes(query) ||
+                medico.crm.toLowerCase().includes(query) ||
+                medico.especialidade.nome.toLowerCase().includes(query)
+            );
         },
     },
 });

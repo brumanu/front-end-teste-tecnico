@@ -63,6 +63,7 @@ export const usePacientesStore = defineStore("pacientes", {
             }
         ],
         selectedPaciente: null,
+        searchQuery: "",
     }),
     actions: {
         async fetchEnderecoPorCep(cep) {
@@ -111,10 +112,21 @@ export const usePacientesStore = defineStore("pacientes", {
             this.pacientes = this.pacientes.filter((obj) => obj.paciente_id !== paciente_id);
             toast.success('Paciente deletado com sucesso');
         },
+        setSearchQuery(query) {
+            this.searchQuery = query;
+        },
     },
     getters: {
         totalPacientes(state) {
             return state.pacientes.length;
+        },
+        filteredPacientes(state) {
+            const query = state.searchQuery.toLowerCase();
+            return state.pacientes.filter(
+                (paciente) =>
+                    paciente.nome.toLowerCase().includes(query) ||
+                    paciente.cpf.replace(/[^\d]/g, "").includes(query)
+            );
         },
     },
 });
