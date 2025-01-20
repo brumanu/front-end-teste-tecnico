@@ -39,9 +39,7 @@ export const useConsultasStore = defineStore("consultas", {
       );
       
       if (index !== -1) {
-        // Verificar se já existe uma consulta para o médico no mesmo horário
         const consultaExistente = this.consultas.find((consulta) => {
-          // Verifica se a consulta é para o mesmo médico e o mesmo horário, mas exclui a consulta que está sendo atualizada
           return (
             consulta.medico.medico_id === consultaAtualizada.medico.medico_id &&
             consulta.data_consulta === consultaAtualizada.data_consulta &&
@@ -50,12 +48,9 @@ export const useConsultasStore = defineStore("consultas", {
         });
 
         if (consultaExistente) {
-          // Emitir um toast de erro caso já exista uma consulta no mesmo horário
           toast.error('Este médico já está com consulta marcada neste horário.');
-          return; // Impede a atualização da consulta
+          return;
         }
-
-        // Se não existir consulta no mesmo horário, pode atualizar a consulta
         this.consultas[index] = { ...consultaAtualizada };
         toast.success('Consulta remarcada com sucesso');
       }

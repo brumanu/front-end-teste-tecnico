@@ -1,9 +1,9 @@
 <template>
-  <header class="navbar">
+  <header class="navbar" v-if="isLoggedIn">
     <div class="navbar-container">
       <!-- Logo -->
       <div class="navbar-logo">
-        <router-link to="/">Meu Sistema</router-link>
+        <router-link to="/pacientes">Sistema Médico</router-link>
       </div>
 
       <!-- Menu de Navegação -->
@@ -34,10 +34,14 @@
 </template>
   
   <script setup>
-import { ref } from "vue";
+import { ref,  computed} from "vue";
 import { useRouter } from "vue-router";
 import NavBarIcons from "./partials/NavBarIcons.vue";
 import links from "./partials/links";
+  import { useContasStore } from '@/stores/autenticacao';
+  const contasStore = useContasStore();
+
+  const isLoggedIn = computed(() => contasStore.isLoggedIn);
 
 const menuItems = ref([
   { label: "Início", path: "/" },
@@ -49,8 +53,9 @@ const router = useRouter();
 
 const logout = () => {
   // Lógica para logout
+  contasStore.logout();
   console.log("Usuário desconectado.");
-  router.push("/login");
+  router.push("/");
 };
 </script>
   
