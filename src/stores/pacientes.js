@@ -115,6 +115,9 @@ export const usePacientesStore = defineStore("pacientes", {
         setSearchQuery(query) {
             this.searchQuery = query;
         },
+        selectedPacienteId(state) {
+            return state.selectedPaciente ? state.selectedPaciente.paciente_id : null;
+        }
     },
     getters: {
         totalPacientes(state) {
@@ -128,5 +131,9 @@ export const usePacientesStore = defineStore("pacientes", {
                     paciente.cpf.replace(/[^\d]/g, "").includes(query)
             );
         },
+        setSelectedPacienteId(pacienteId) {
+            const paciente = this.pacientes.find(p => p.paciente_id === pacienteId);
+            this.selectedPaciente = paciente || null;
+        }
     },
 });

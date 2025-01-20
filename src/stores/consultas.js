@@ -18,19 +18,51 @@ export const useConsultasStore = defineStore("consultas", {
       this.selectedConsulta = null;
     },
     addConsulta(novoConsulta) {
-
       const novoId = String(this.consultas.length + 1);
-      this.consultas.push({consulta_id: novoId, ...novoConsulta})
-        toast.success('Consulta cadastrada com sucesso');
+      const consultaExistente = this.consultas.find((consulta) => {
+        return (
+          consulta.medico.medico_id === novoConsulta.medico.medico_id &&
+          consulta.data_consulta === novoConsulta.data_consulta 
+        );
+      });
+
+      if (consultaExistente) {
+        toast.error('Este médico já está com consulta marcada neste horário.');
+        return;
+      }
+      this.consultas.push({ consulta_id: novoId, ...novoConsulta });
+      toast.success('Consulta cadastrada com sucesso');
     },
-    updateConsulta(consultaAtualizada, paciente) {
-      const index = paciente.consulta.findIndex(
+    updateConsulta(consultaAtualizada) {
+      const index = this.consultas.findIndex(
         (obj) => obj.consulta_id === consultaAtualizada.consulta_id
       );
+      
       if (index !== -1) {
-        paciente.consulta[index] = { ...consultaAtualizada };
-          toast.success('Consulta atualizada com sucesso');
+        // Verificar se já existe uma consulta para o médico no mesmo horário
+        const consultaExistente = this.consultas.find((consulta) => {
+          // Verifica se a consulta é para o mesmo médico e o mesmo horário, mas exclui a consulta que está sendo atualizada
+          return (
+            consulta.medico.medico_id === consultaAtualizada.medico.medico_id &&
+            consulta.data_consulta === consultaAtualizada.data_consulta &&
+            consulta.consulta_id !== consultaAtualizada.consulta_id
+          );
+        });
+
+        if (consultaExistente) {
+          // Emitir um toast de erro caso já exista uma consulta no mesmo horário
+          toast.error('Este médico já está com consulta marcada neste horário.');
+          return; // Impede a atualização da consulta
+        }
+
+        // Se não existir consulta no mesmo horário, pode atualizar a consulta
+        this.consultas[index] = { ...consultaAtualizada };
+        toast.success('Consulta remarcada com sucesso');
       }
+    },
+    deleteConsulta(consulta_id) {
+      this.consultas = this.consultas.filter((obj) => obj.consulta_id !== consulta_id);
+      toast.success('Consulta cancelada com sucesso');
     },
     deleteConsulta(consulta_id) {
       this.consultas = this.consultas.filter((obj) => obj.consulta_id !== consulta_id);

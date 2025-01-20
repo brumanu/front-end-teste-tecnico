@@ -43,6 +43,9 @@ export const useMedicosStore = defineStore("medicos", {
             this.medicos = this.medicos.filter((obj) => obj.medico_id !== medico_id);
             toast.success('Medico deletado com sucesso');
         },
+        selectedMedicoId(state) {
+            return state.selectedMedico ? state.selectedMedico.medico_id : null;
+        }
     },
     getters: {
         totalMedicos(state) {
@@ -56,5 +59,9 @@ export const useMedicosStore = defineStore("medicos", {
                 medico.especialidade.nome.toLowerCase().includes(query)
             );
         },
+        setSelectedMedicoId(medicoId) {
+            const medico = this.medicos.find(p => p.medico_id === medicoId);
+            this.selectedMedico = medico || null;
+        }
     },
 });

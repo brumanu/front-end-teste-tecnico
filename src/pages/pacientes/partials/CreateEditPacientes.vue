@@ -151,14 +151,9 @@ onUpdated(() => {
     if (payload.value.cpf_responsavel === payload.value.cpf) {
       errors.value.cpf_responsavel = "Cpf do paciente não pode ser igual ao Cpf do responsável"
     }
-
-    console.log( errors.value);
-    console.log(3);
     
     if (isValid(errors.value)) {
-    console.log(4);
     if (props.isUpdate) {
-      console.log(5);
       pacientesStore.updatePaciente({
         paciente_id: pacientesStore.selectedPaciente.paciente_id,
         nome: payload.value.nome,
@@ -171,7 +166,6 @@ onUpdated(() => {
         endereco_numero: payload.value.endereco_numero,
       });
     } else {
-      console.log(6 );
       pacientesStore.addPaciente({
         nome: payload.value.nome,
         cpf: payload.value.cpf,

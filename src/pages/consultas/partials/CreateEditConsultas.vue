@@ -17,13 +17,12 @@
             filterable
             clearable
             placeholder="Pesquise o paciente pelo nome ou CPF"
-            class="select-paciente"
           >
             <el-option
               v-for="paciente in filteredPacientes"
               :key="paciente.paciente_id"
               :label="`${paciente.nome} - ${paciente.cpf}`"
-              :value="paciente"
+              :value="paciente.paciente_id"
             >
               <div class="option-content">
                 <div>{{ paciente.nome }} - {{ paciente.cpf }}</div>
@@ -49,7 +48,7 @@
               v-for="medico in filteredMedicos"
               :key="medico.medico_id"
               :label="`${medico.nome} - ${medico.crm} (${medico.especialidade.nome})`"
-              :value="medico"
+              :value="medico.medico_id"
             >
               <div class="option-content">
                 <div>
@@ -124,8 +123,23 @@ const emit = defineEmits(["close"]);
 
 onUpdated(() => {
   if (props.open == true) {
+
     title.value = props.isUpdate ? "Remarcar" : "Marcar";
-    // payload.value.nome = especialidadesStore.selectedEspecialidade?.nome || "";
+
+    const consulta = consultasStore.selectedConsulta || {};
+    selectedPaciente.value = null;
+    selectedMedico.value = null;
+    if (props.isUpdate) {
+      selectedPaciente.value = consulta.paciente.paciente_id;
+      selectedMedico.value = consulta.medico.medico_id;
+    }
+    const dateUpdateFormated = consulta.data_consulta || "";
+    payload.value.data_consulta = dateUpdateFormated
+      ? dayjs(dateUpdateFormated, "DD/MM/YYYY HH:mm").format(
+          "YYYY-MM-DD HH:mm:ss"
+        )
+      : "";
+
     errors.value = {};
   }
 });
@@ -138,15 +152,17 @@ const handleSubmit = () => {
       "DD/MM/YYYY HH:mm"
     );
     if (props.isUpdate) {
-        consultasStore.updateConsulta({
-        especialidade_id:
-        consultasStore.selectedEspecialidade.especialidade_id,
-        nome: payload.value.nome,
+      consultasStore.updateConsulta({
+        consulta_id: consultasStore.selectedConsulta.consulta_id,
+        paciente: pacientesStore.selectedPaciente,
+        medico: medicosStore.selectedMedico,
+        data_consulta: formattedDate,
+        data_agendamento: consultasStore.selectedConsulta.data_agendamento,
       });
     } else {
-        consultasStore.addConsulta({
-        paciente: selectedPaciente.value,
-        medico: selectedMedico.value,
+      consultasStore.addConsulta({
+        paciente: pacientesStore.selectedPaciente,
+        medico: medicosStore.selectedMedico,
         data_consulta: formattedDate,
         data_agendamento: formatDate(Date.now()),
       });
@@ -158,15 +174,24 @@ const handleSubmit = () => {
 };
 
 const handleClose = () => {
-    consultasStore.clearSelectedConsulta();
+  consultasStore.clearSelectedConsulta();
   payload.value = {};
   errors.value = {};
   emit("close");
 };
 
 const selectedPaciente = computed({
-  get: () => pacientesStore.selectedPaciente,
-  set: (value) => pacientesStore.setSelectedPaciente(value),
+  get: () =>
+    pacientesStore.selectedPaciente
+      ? pacientesStore.selectedPaciente.paciente_id
+      : null,
+  set: (pacienteId) => {
+    // A partir do paciente_id, pega o paciente completo no store
+    const paciente = pacientesStore.pacientes.find(
+      (p) => p.paciente_id === pacienteId
+    );
+    pacientesStore.selectedPaciente = paciente || null;
+  },
 });
 
 const filteredPacientes = computed(() => {
@@ -178,7 +203,14 @@ const filteredPacientes = computed(() => {
   );
 });
 
-const selectedMedico = ref(null);
+const selectedMedico = computed({
+  get: () =>
+    medicosStore.selectedMedico ? medicosStore.selectedMedico.medico_id : null,
+  set: (medicoId) => {
+    const medico = medicosStore.medicos.find((p) => p.medico_id === medicoId);
+    medicosStore.selectedMedico = medico || null;
+  },
+});
 
 const filteredMedicos = computed(() => {
   if (!selectedPaciente.value) return [];
