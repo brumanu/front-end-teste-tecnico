@@ -123,7 +123,6 @@ const emit = defineEmits(["close"]);
 
 onUpdated(() => {
   if (props.open == true) {
-
     title.value = props.isUpdate ? "Remarcar" : "Marcar";
 
     const consulta = consultasStore.selectedConsulta || {};
@@ -213,17 +212,37 @@ const selectedMedico = computed({
 });
 
 const filteredMedicos = computed(() => {
-  if (!selectedPaciente.value) return [];
+
+  if (!pacientesStore.selectedPaciente) return [];
+
+  console.log(pacientesStore.selectedPaciente);
 
   const query = medicosStore.searchQuery.toLowerCase();
 
-  // Verifica se o paciente tem menos de 12 anos
   const isChild = (() => {
     const today = new Date();
-    const birthDate = new Date(selectedPaciente.value.data_nasc);
-    const age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    return age < 12 || (age === 12 && m < 0);
+
+    // Converte a data do formato "DD/MM/YYYY" para "YYYY-MM-DD"
+    const [day, month, year] =
+      pacientesStore.selectedPaciente.data_nasc.split("/");
+    const birthDate = new Date(`${year}-${month}-${day}`); // Formato ISO
+
+    if (isNaN(birthDate)) {
+      console.error(
+        "Data de nascimento inválida:",
+        pacientesStore.selectedPaciente.data_nasc
+      );
+      return false;
+    }
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    const dayDifference = today.getDate() - birthDate.getDate();
+
+    if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+      age--;
+    }
+    return age < 12; // Retorna true se for menor de 12 anos
   })();
 
   return medicosStore.medicos.filter((medico) => {
@@ -234,7 +253,7 @@ const filteredMedicos = computed(() => {
 
     // Se for criança, filtra apenas pediatras
     if (isChild) {
-      return matchesQuery && medico.especialidade.nome === "Pediatria";
+      return medico.especialidade.nome === "Pediatria" && matchesQuery;
     }
 
     return matchesQuery;
