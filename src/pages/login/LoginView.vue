@@ -61,7 +61,6 @@ const handleLogin = () => {
   contasStore.login(payload.value.email, payload.value.password);
 
   if (contasStore.isLoggedIn) {
-    // Redirecionar para a página inicial após o login bem-sucedido
     router.push("/especialidades");
   } else {
     toast.error("Email ou senha incorretos");

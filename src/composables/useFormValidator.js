@@ -2,15 +2,12 @@
 export function useFormValidator() {
   // Valida se um CPF é válido
   const validateCPF = (cpf) => {
-    
     if (!cpf) return false;
     cpf = cpf.replace(/[^\d]+/g, "");
 
     if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-
     let soma = 0;
     let resto;
-
     for (let i = 1; i <= 9; i++) {
       soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
     }

@@ -4,7 +4,7 @@ const toast = useToast();
 
 export const useConsultasStore = defineStore("consultas", {
   state: () => ({
-    selectedConsulta: null, // Consulta selecionada
+    selectedConsulta: null,
     consultas:[]
   }),
   actions: {

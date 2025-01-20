@@ -32,7 +32,6 @@ app.use(pinia);
 app.use(TheMask)
 
 app.use(Toast, {
-    // Opções de configuração (opcional)
     position: 'bottom-right',
     timeout: 5000,
     draggable: true,

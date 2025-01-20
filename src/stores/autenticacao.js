@@ -43,7 +43,7 @@ export const useContasStore = defineStore("Contas", {
             return state.contas.length;
         },
         isLoggedIn(state) {
-            return !!state.usuarioLogado; // Converte para booleano
+            return !!state.usuarioLogado;
         }
     },
 });

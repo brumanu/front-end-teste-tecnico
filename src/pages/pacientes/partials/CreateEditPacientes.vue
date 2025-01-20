@@ -198,7 +198,6 @@ const buscarEndereco = async () => {
 
     payload.value.endereco = endereco.logradouro;
 
-    // Limpa qualquer erro anterior
     errors.value.cep = null;
   } catch (error) {
     console.error("Erro ao buscar endereço:", error);

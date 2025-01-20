@@ -34,16 +34,6 @@ export default {
   mounted() {
     document.addEventListener("click", this.closeModal);
   },
-  methods: {
-    
-    // closeModal(e) {
-    //   if (this.closeBackdrop) {
-    //     if (e.target.classList.contains("backdrop")) {
-    //       this.$emit("close");
-    //     }
-    //   }
-    // },
-  },
   beforeUnmount() {
     document.removeEventListener("click", this.closeModal);
   },
@@ -141,7 +131,7 @@ export default {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    max-height: 95vh; /* Limite a altura máxima do modal */
+    max-height: 95vh; 
     
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -158,15 +148,15 @@ export default {
 
   .modal-header,
   .modal-footer {
-    flex-shrink: 0; /* Impede que o header e o footer encolham */
+    flex-shrink: 0; 
     padding: 0.5rem;
   }
 
   .modal-body {
-    flex-grow: 1; /* O corpo expande para preencher o restante do espaço */
-    overflow-y: auto; /* Permite rolagem se o conteúdo exceder o tamanho disponível */
+    flex-grow: 1; 
+    overflow-y: auto;
     padding: 1rem;
-    max-height: calc(95vh - 100px); /* Limita a altura do corpo do modal */
+    max-height: calc(95vh - 100px);
   }
 
   .close-icon {

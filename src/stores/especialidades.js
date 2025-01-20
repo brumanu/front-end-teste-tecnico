@@ -9,8 +9,8 @@ export const useEspecialidadesStore = defineStore("especialidades", {
       { especialidade_id: 2, nome: "Dermatologista" },
       { especialidade_id: 3, nome: "Nutricionista" },
       { especialidade_id: 4, nome: "Pediatria" },
-    ], // Lista de especialidades
-    selectedEspecialidade: null, // Especialidade selecionada
+    ], 
+    selectedEspecialidade: null, 
   }),
   actions: {
     setEspecialidades(data) {

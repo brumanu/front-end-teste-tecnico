@@ -4,7 +4,7 @@ const toast = useToast();
 
 export const useTelefonesStore = defineStore("telefones", {
   state: () => ({
-    selectedTelefone: null, // Telefone selecionada
+    selectedTelefone: null,
   }),
   actions: {
     setTelefones(data) {
